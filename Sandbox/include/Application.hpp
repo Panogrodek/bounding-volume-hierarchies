@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "Random.hpp"
+#include "BVH.hpp"
 
 class Application
 {
@@ -21,4 +22,8 @@ private:
 	virtual void PollEvents();
 
 	sf::RenderWindow m_window;
+
+	DynamicTree m_DynamicTree;
+
+	std::vector<Rectangle> m_Rects;
 };

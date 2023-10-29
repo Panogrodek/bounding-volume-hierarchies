@@ -6,9 +6,9 @@ Here we create window, and do all of the technical stuff of the Application
 Application::Application()
 {
 	Init();
-
-	//m_window.setView(sf::View({{0.f, 0.f}, {24.f, -24.f} }));
-
+	
+	//for simplicity, window coords are the same as rectangle coords
+	m_window.setView(sf::View({{50.f, 50.f}, {100.f, -100.f}})); 
 }
 
 Application::~Application()
@@ -29,6 +29,18 @@ void Application::Run()
 void Application::Init()
 {
 	InitWindow();
+
+	m_Rects.push_back(Rectangle({ 25.f,30.f }, { 5.f,10.f }));
+	m_Rects.push_back(Rectangle({ 50.f,50.f }, { 10.f,10.f }));
+	m_Rects.push_back(Rectangle({ 75.f,80.f }, { 20.f,7.5f }));
+	m_Rects.push_back(Rectangle({ 80.f,20.f }, { 16.f,15.5f }));
+
+	for (int i = 0; i < 0; i++) {
+		m_Rects.push_back(Rectangle({Rand(0.f,100.f),Rand(0.f,100.f) }, { Rand(0.f,10.f),Rand(0.f,10.f) }));
+	}
+
+	for (auto& r : m_Rects)
+		m_DynamicTree.Insert(r);
 }
 
 void Application::InitWindow()
@@ -47,8 +59,17 @@ void Application::Update()
 void Application::Render()
 {
 	m_window.clear();
+	
+	m_DynamicTree.Render(m_window);
 
+	for (auto& r : m_Rects) {
+		sf::RectangleShape shape;
+		shape.setSize(r.size);
+		shape.setOrigin(r.size / 2.f);
+		shape.setPosition(r.pos);
 
+		m_window.draw(shape);
+	}
 
 	m_window.display();
 }

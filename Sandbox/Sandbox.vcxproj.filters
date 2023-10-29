@@ -15,13 +15,15 @@
     <ClInclude Include="include\Application.hpp">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\BVH.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="include\Random.hpp">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="pch\stdafx.h">
       <Filter>pch</Filter>
     </ClInclude>
-    <ClInclude Include="include\BVH.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -31,7 +33,9 @@
     <ClCompile Include="src\Application.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\BVH.cpp" />
+    <ClCompile Include="src\BVH.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="openal32.dll" />

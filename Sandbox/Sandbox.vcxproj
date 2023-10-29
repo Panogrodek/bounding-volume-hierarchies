@@ -105,11 +105,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="src\BVH.cpp" />
     <ClCompile Include="pch\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\BVH.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="openal32.dll" />
