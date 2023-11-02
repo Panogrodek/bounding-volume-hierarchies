@@ -38,8 +38,6 @@ void DynamicTree::Insert(Rectangle* rect)
 	}
 	
 	//step 1 find best sibling
-	float bestArea = Area(Union(m_nodes[0].box, m_nodes[leafIndex].box));
-	int index = 0;
 
 	/*
 	Second disclaimer!!!!!!!
@@ -51,7 +49,7 @@ void DynamicTree::Insert(Rectangle* rect)
 
 	//Surface Area Heuristic and Branch and Bound \/
 	AABB leafAABB = m_nodes[leafIndex].box;
-	index = m_rootIndex;
+	int index = m_rootIndex;
 	while (m_nodes[index].isLeaf == false) 
 	{
 		int child1 = m_nodes[index].child1;
@@ -124,14 +122,7 @@ void DynamicTree::Insert(Rectangle* rect)
 
 	//step 3 refitting ancestors (TODO: optimize using AVL tree)
 
-	while (index != -1) {
-		if (m_nodes[index].parentIndex == -1)
-			break;
-		Node& parent = m_nodes[m_nodes[index].parentIndex];
-		parent.box = Union(m_nodes[parent.child1].box, m_nodes[parent.child2].box);
-		
-		index = parent.ownIndex;
-	}
+	RefitTree(index);
 }
 
 void DynamicTree::Render(sf::RenderWindow& window)
@@ -153,7 +144,7 @@ void DynamicTree::Render(sf::RenderWindow& window)
 	}
 }
 
-Rectangle* DynamicTree::Test(sf::Vector2f mousePos)
+Rectangle* DynamicTree::Test(sf::Vector2f mousePos, bool Remove)
 {
 	m_Checks = 0;
 	std::stack<int> stack;
@@ -172,7 +163,10 @@ Rectangle* DynamicTree::Test(sf::Vector2f mousePos)
 
 		if (node.isLeaf) {
 			std::cout << "With BVH: " << m_Checks << "\n";
-			return node.object;
+			Rectangle* obj = node.object;
+			if (Remove)
+				RemoveLeafNode(index);
+			return obj;
 		}
 		else
 		{
@@ -193,6 +187,95 @@ AABB DynamicTree::Union(AABB a, AABB b)
 	C.upperBound = sf::Vector2f(fmax(a.upperBound.x, b.upperBound.x), fmax(a.upperBound.y, b.upperBound.y));
 	C.col = sf::Color(Rand(0.f, 255.f), Rand(0.f, 255.f), Rand(0.f, 255.f), 100);
 	return C;
+}
+
+void DynamicTree::SwapNodeWithLast(int index)
+{
+	if (index == m_nodeCount - 1)
+		return;
+	if (m_nodeCount == 0)
+		return;
+
+	Node& last = m_nodes[m_nodeCount - 1];
+
+	int child1 = last.child1;
+	int child2 = last.child2;
+
+	if (child1 != -1)
+		m_nodes[child1].parentIndex = index;
+	if (child2 != -1)
+		m_nodes[child2].parentIndex = index;
+
+	int parent = last.parentIndex;
+	if (parent != -1) {
+		if (m_nodes[parent].child1 == last.ownIndex)
+			m_nodes[parent].child1 = index;
+		else
+			m_nodes[parent].child2 = index;
+	}
+
+	last.ownIndex = index;
+	std::swap(last, m_nodes[index]);
+}
+
+void DynamicTree::RefitTree(int index)
+{
+	while (index != -1) {
+		if (m_nodes[index].parentIndex == -1)
+			break;
+		Node& parent = m_nodes[m_nodes[index].parentIndex];
+		parent.box = Union(m_nodes[parent.child1].box, m_nodes[parent.child2].box);
+
+		index = parent.ownIndex;
+	}
+}
+
+void DynamicTree::RemoveLeafNode(int index)
+{
+	Node& node = m_nodes[index];
+	if (!node.isLeaf)
+		return;
+
+	if (node.ownIndex == m_rootIndex) { //leaf was the only one
+		m_nodeCount--;
+		m_rootIndex = -1;
+		return;
+	}
+
+	//index - ownid
+	int parent = node.parentIndex;
+	int sibling = m_nodes[parent].child1 == index ? m_nodes[parent].child2 : m_nodes[parent].child1;
+	int grandparent = m_nodes[parent].parentIndex;
+
+	Node& Parent = m_nodes[parent];
+	Node& Sibling = m_nodes[sibling];
+
+	if (grandparent == -1) {
+		parent = m_rootIndex;
+	}
+
+	Parent.ownIndex = sibling;
+	Sibling.ownIndex = parent;
+	Sibling.parentIndex = grandparent;
+
+	if(Sibling.child1 != -1)
+		m_nodes[Sibling.child1].parentIndex = parent;
+	if (Sibling.child2 != -1)
+		m_nodes[Sibling.child2].parentIndex = parent;
+
+	std::swap(m_nodes[sibling], m_nodes[parent]);
+
+	//parent is now sibling
+	SwapNodeWithLast(sibling);
+	//forget about parent
+	m_nodeCount--;
+	//delete node on index
+	SwapNodeWithLast(index);
+	//forget about index
+	m_nodeCount--;
+
+	//refit the whole tree
+	RefitTree(parent);
 }
 
 int DynamicTree::AllocateNewLeaf(Rectangle* rect)
@@ -246,12 +329,6 @@ int DynamicTree::AllocateInternalNode(Node& a, Node& b)
 	return internalNodeIndex;
 }
 
-float DynamicTree::Area(AABB A) {
-	sf::Vector2f d = A.upperBound - A.lowerBound;
-
-	return 2.0f * d.x * d.y;
-}
-
 bool AABB::contains(sf::Vector2f point)
 {
 	m_Checks++;
@@ -266,4 +343,11 @@ float AABB::GetPerimeter()
 {
 	sf::Vector2f d = upperBound - lowerBound;
 	return d.x * d.y;
+}
+
+float AABB::GetArea()
+{
+	sf::Vector2f d = upperBound - lowerBound;
+
+	return 2.0f * d.x * d.y;
 }

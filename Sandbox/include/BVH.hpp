@@ -23,6 +23,7 @@ struct AABB {
 
 	bool contains(sf::Vector2f point);
 	float GetPerimeter();
+	float GetArea();
 };
 
 struct Node
@@ -45,14 +46,19 @@ public:
 
 	void Render(sf::RenderWindow& window);
 
-	Rectangle* Test(sf::Vector2f mousePos);
+
+	Rectangle* Test(sf::Vector2f mousePos, bool Remove);
 private:
 	Node* m_nodes;
 	int m_nodeCount = 0;
 	int m_rootIndex = -1;
 
-	AABB Union(AABB a, AABB b);
+	void SwapNodeWithLast(int index);
+	void RefitTree(int index);
+	void RemoveLeafNode(int index);
 	int AllocateNewLeaf(Rectangle* rect);
 	int AllocateInternalNode(Node& a, Node& b);
-	float Area(AABB A);
+
+	AABB Union(AABB a, AABB b);
+	
 };

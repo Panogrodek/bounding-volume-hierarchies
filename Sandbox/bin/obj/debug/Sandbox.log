@@ -1,20 +1,17 @@
-﻿  Application.cpp
-C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\src\Application.cpp(63,13): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
-  BVH.cpp
-C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\src\BVH.cpp(181,60): warning C4244: "argument": konwersja z "T" do "uint8_t", możliwa utrata danych
+﻿  BVH.cpp
+C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\src\BVH.cpp(188,60): warning C4244: "argument": konwersja z "T" do "uint8_t", możliwa utrata danych
           with
           [
               T=float
           ]
-C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\src\BVH.cpp(181,42): warning C4244: "argument": konwersja z "T" do "uint8_t", możliwa utrata danych
+C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\src\BVH.cpp(188,42): warning C4244: "argument": konwersja z "T" do "uint8_t", możliwa utrata danych
           with
           [
               T=float
           ]
-C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\src\BVH.cpp(181,24): warning C4244: "argument": konwersja z "T" do "uint8_t", możliwa utrata danych
+C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\src\BVH.cpp(188,24): warning C4244: "argument": konwersja z "T" do "uint8_t", możliwa utrata danych
           with
           [
               T=float
           ]
-  Generowanie kodu...
   Sandbox.vcxproj -> C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\bin\debug\Sandbox.exe

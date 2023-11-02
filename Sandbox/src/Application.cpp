@@ -56,7 +56,22 @@ void Application::Update()
 	sf::Vector2i mousePos = sf::Mouse::getPosition(m_window);
 	sf::Vector2f mouseCoords = m_window.mapPixelToCoords(mousePos);
 	std::cout << "Without BVH: " << m_Rects.size() << " ";
-	m_HoveredObject = m_DynamicTree.Test(mouseCoords);
+
+	bool isleftpressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+
+	m_HoveredObject = m_DynamicTree.Test(mouseCoords, isleftpressed);
+	if (isleftpressed && m_HoveredObject != nullptr) {
+		for (int i = 0; i < m_Rects.size(); i++) {
+			Rectangle* rect = m_Rects[i];
+			if (rect != m_HoveredObject)
+				continue;
+
+			delete rect;
+			m_Rects.erase(m_Rects.begin() + i);
+			break;
+		}
+	}
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !keyPress) {
 
 		keyPress = true;
