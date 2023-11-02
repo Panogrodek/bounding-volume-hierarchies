@@ -30,13 +30,13 @@ void Application::Init()
 {
 	InitWindow();
 
-	m_Rects.push_back(Rectangle({ 25.f,30.f }, { 5.f,10.f }));
-	m_Rects.push_back(Rectangle({ 50.f,50.f }, { 10.f,10.f }));
-	m_Rects.push_back(Rectangle({ 75.f,80.f }, { 20.f,7.5f }));
-	m_Rects.push_back(Rectangle({ 80.f,20.f }, { 16.f,15.5f }));
+	//m_Rects.push_back(new Rectangle({ 6.f,50.f }, { 10.f,10.f	}));
+	//m_Rects.push_back(new Rectangle({ 75.f,80.f }, { 20.f,7.5f  }));
+	//m_Rects.push_back(new Rectangle({ 25.f,30.f }, { 5.f,10.f	}));
+	//m_Rects.push_back(new Rectangle({ 80.f,20.f }, { 16.f,15.5f }));
 
 	for (int i = 0; i < 0; i++) {
-		m_Rects.push_back(Rectangle({Rand(0.f,100.f),Rand(0.f,100.f) }, { Rand(0.f,10.f),Rand(0.f,10.f) }));
+		m_Rects.push_back(new Rectangle({Rand(0.f,100.f),Rand(0.f,100.f) }, { Rand(0.f,10.f),Rand(0.f,10.f) }));
 	}
 
 	for (auto& r : m_Rects)
@@ -53,7 +53,25 @@ void Application::InitWindow()
 
 void Application::Update()
 {
+	sf::Vector2i mousePos = sf::Mouse::getPosition(m_window);
+	sf::Vector2f mouseCoords = m_window.mapPixelToCoords(mousePos);
+	std::cout << "Without BVH: " << m_Rects.size() << " ";
+	m_HoveredObject = m_DynamicTree.Test(mouseCoords);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !keyPress) {
 
+		keyPress = true;
+		int index = m_Rects.size();
+		if (index < m_RectsPos.size()) {
+			m_Rects.push_back(new Rectangle(m_RectsPos[index], m_RectsSizes[index]));
+		}
+		else {
+			m_Rects.push_back(new Rectangle({ Rand(0.f,100.f),Rand(0.f,100.f) }, { Rand(0.f,10.f),Rand(0.f,10.f) }));
+		}
+		m_DynamicTree.Insert(m_Rects.back());
+	}
+	else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+		keyPress = false;
+	}
 }
 
 void Application::Render()
@@ -64,9 +82,11 @@ void Application::Render()
 
 	for (auto& r : m_Rects) {
 		sf::RectangleShape shape;
-		shape.setSize(r.size);
-		shape.setOrigin(r.size / 2.f);
-		shape.setPosition(r.pos);
+		if (r == m_HoveredObject)
+			shape.setFillColor(sf::Color::Red);
+		shape.setSize(r->size);
+		shape.setOrigin(r->size / 2.f);
+		shape.setPosition(r->pos);
 
 		m_window.draw(shape);
 	}

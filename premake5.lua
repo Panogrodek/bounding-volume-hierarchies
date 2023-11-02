@@ -1,4 +1,4 @@
-workspace "KDtree"
+workspace "BVH"
     startproject "Sandbox"
     architecture "x64"
 
