@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "Random.hpp"
 #include "BVH.hpp"
+#include "CircleObject.hpp"
 
 class Application
 {
@@ -49,4 +50,6 @@ private:
 	};
 
 	bool keyPress = false;
+	float m_dt = 0.f;
+	sf::Clock m_clock;
 };

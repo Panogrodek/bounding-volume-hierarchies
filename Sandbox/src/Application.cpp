@@ -6,13 +6,14 @@ Here we create window, and do all of the technical stuff of the Application
 Application::Application()
 {
 	Init();
-	
+
 	//for simplicity, window coords are the same as rectangle coords
-	m_window.setView(sf::View({{50.f, 50.f}, {100.f, -100.f}})); 
+	m_window.setView(sf::View({{BOUNDS.x/2.f, BOUNDS.y/2.f}, {BOUNDS.x, -BOUNDS.y}}));
 }
 
 Application::~Application()
 {
+	CircleObjectManager::Destroy();
 }
 
 void Application::Run()
@@ -30,17 +31,25 @@ void Application::Init()
 {
 	InitWindow();
 
+	m_clock.restart();
+	CircleObjectManager::Init();
+	CircleObjectManager::AddCircle(1.f, { 30.f,30.f }, { -5.f,5.f });
+	CircleObjectManager::AddCircle(10.f, { 60.f,60.f }, { 5.f,5.f });
+	CircleObjectManager::AddCircle(10.f, { 30.f,60.f }, { 5.f,-5.f });
+	CircleObjectManager::AddCircle(10.f, { 20.f,60.f }, { -10.f,-5.f });
+	CircleObjectManager::AddCircle(10.f, { 50.f,60.f }, { 15.f,-5.f });
+
 	//m_Rects.push_back(new Rectangle({ 6.f,50.f }, { 10.f,10.f	}));
 	//m_Rects.push_back(new Rectangle({ 75.f,80.f }, { 20.f,7.5f  }));
 	//m_Rects.push_back(new Rectangle({ 25.f,30.f }, { 5.f,10.f	}));
 	//m_Rects.push_back(new Rectangle({ 80.f,20.f }, { 16.f,15.5f }));
 
-	for (int i = 0; i < 0; i++) {
-		m_Rects.push_back(new Rectangle({Rand(0.f,100.f),Rand(0.f,100.f) }, { Rand(0.f,10.f),Rand(0.f,10.f) }));
-	}
+	//for (int i = 0; i < 0; i++) {
+	//	m_Rects.push_back(new Rectangle({Rand(0.f,100.f),Rand(0.f,100.f) }, { Rand(0.f,10.f),Rand(0.f,10.f) }));
+	//}
 
-	for (auto& r : m_Rects)
-		m_DynamicTree.Insert(r);
+	//for (auto& r : m_Rects)
+	//	m_DynamicTree.Insert(r);
 }
 
 void Application::InitWindow()
@@ -53,6 +62,12 @@ void Application::InitWindow()
 
 void Application::Update()
 {
+	m_dt = m_clock.getElapsedTime().asSeconds();
+	m_clock.restart();
+
+	CircleObjectManager::Update(m_dt);
+
+
 	sf::Vector2i mousePos = sf::Mouse::getPosition(m_window);
 	sf::Vector2f mouseCoords = m_window.mapPixelToCoords(mousePos);
 	std::cout << "Without BVH: " << m_Rects.size() << " ";
@@ -105,6 +120,8 @@ void Application::Render()
 
 		m_window.draw(shape);
 	}
+
+	CircleObjectManager::Render(m_window);
 
 	m_window.display();
 }

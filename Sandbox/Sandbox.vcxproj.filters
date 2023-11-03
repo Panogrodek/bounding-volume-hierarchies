@@ -24,6 +24,9 @@
     <ClInclude Include="pch\stdafx.h">
       <Filter>pch</Filter>
     </ClInclude>
+    <ClInclude Include="include\CircleObject.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -36,6 +39,7 @@
     <ClCompile Include="src\BVH.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\CircleObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="openal32.dll" />

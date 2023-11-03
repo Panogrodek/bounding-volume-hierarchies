@@ -1,7 +1,11 @@
 #pragma once
 #include <SFML/System/Vector2.hpp>
 
+constexpr float FAT_FACTOR = 0.0f;
+
 static int m_Checks = 0;
+
+class CircleObject;
 
 struct Rectangle {
 	Rectangle() {};
@@ -12,6 +16,8 @@ struct Rectangle {
 
 	sf::Vector2f pos{};
 	sf::Vector2f size{};
+	CircleObject* objptr = nullptr;
+	int nodeIndex = -1;
 };
 
 struct AABB {
@@ -44,6 +50,7 @@ public:
 	~DynamicTree();
 	void Insert(Rectangle* rect);
 
+	void Update(int index);
 	void Render(sf::RenderWindow& window);
 
 

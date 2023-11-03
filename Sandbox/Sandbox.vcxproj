@@ -100,6 +100,7 @@
   <ItemGroup>
     <ClInclude Include="include\Application.hpp" />
     <ClInclude Include="include\BVH.hpp" />
+    <ClInclude Include="include\CircleObject.hpp" />
     <ClInclude Include="include\Random.hpp" />
     <ClInclude Include="pch\stdafx.h" />
   </ItemGroup>
@@ -110,6 +111,7 @@
     </ClCompile>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\BVH.cpp" />
+    <ClCompile Include="src\CircleObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="openal32.dll" />

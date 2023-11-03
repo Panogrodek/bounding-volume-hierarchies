@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "BVH.hpp"
 #include "Random.hpp"
+#include "CircleObject.hpp"
 #include <math.h>
 #include <stack>
 
@@ -125,6 +126,25 @@ void DynamicTree::Insert(Rectangle* rect)
 	RefitTree(index);
 }
 
+void DynamicTree::Update(int index)
+{
+	if (index >= m_nodeCount)
+		return;
+	Rectangle* rect = m_nodes[index].object;
+	sf::Vector2f pos = rect->pos;
+	sf::Vector2f size = rect->size;
+	AABB aabb;
+	aabb.lowerBound = pos - (size / 2.f);
+	aabb.upperBound = pos + (size / 2.f);
+
+	AABB FatAABB = m_nodes[index].box;
+	if (FatAABB.contains(aabb.lowerBound) && FatAABB.contains(aabb.upperBound))
+		return;
+
+	RemoveLeafNode(index);
+	Insert(rect);
+}
+
 void DynamicTree::Render(sf::RenderWindow& window)
 {
 	//this function is only for debuging purpouses
@@ -185,18 +205,18 @@ AABB DynamicTree::Union(AABB a, AABB b)
 	AABB C;
 	C.lowerBound = sf::Vector2f(fmin(a.lowerBound.x, b.lowerBound.x), fmin(a.lowerBound.y, b.lowerBound.y));
 	C.upperBound = sf::Vector2f(fmax(a.upperBound.x, b.upperBound.x), fmax(a.upperBound.y, b.upperBound.y));
-	C.col = sf::Color(Rand(0.f, 255.f), Rand(0.f, 255.f), Rand(0.f, 255.f), 100);
+	//WARNING, uncommenting the line below leads to flashing lights appearing on the screen!!!!!!
+	C.col = /*sf::Color(Rand(0.f, 255.f), Rand(0.f, 255.f), Rand(0.f, 255.f), 100);*/ sf::Color(100, 100, 100, 100);
 	return C;
 }
 
 void DynamicTree::SwapNodeWithLast(int index)
 {
-	if (index == m_nodeCount - 1)
-		return;
 	if (m_nodeCount == 0)
 		return;
-
 	Node& last = m_nodes[m_nodeCount - 1];
+	if (index == m_nodeCount - 1) 
+		return;
 
 	int child1 = last.child1;
 	int child2 = last.child2;
@@ -215,6 +235,8 @@ void DynamicTree::SwapNodeWithLast(int index)
 	}
 
 	last.ownIndex = index;
+	if(last.object != nullptr)
+		last.object->nodeIndex = index;
 	std::swap(last, m_nodes[index]);
 }
 
@@ -258,6 +280,9 @@ void DynamicTree::RemoveLeafNode(int index)
 	Sibling.ownIndex = parent;
 	Sibling.parentIndex = grandparent;
 
+	if (Sibling.object != nullptr)
+		Sibling.object->nodeIndex = Sibling.ownIndex;
+
 	if(Sibling.child1 != -1)
 		m_nodes[Sibling.child1].parentIndex = parent;
 	if (Sibling.child2 != -1)
@@ -265,13 +290,13 @@ void DynamicTree::RemoveLeafNode(int index)
 
 	std::swap(m_nodes[sibling], m_nodes[parent]);
 
-	//parent is now sibling
-	SwapNodeWithLast(sibling);
-	//forget about parent
-	m_nodeCount--;
 	//delete node on index
 	SwapNodeWithLast(index);
 	//forget about index
+	m_nodeCount--;
+	//parent is now sibling
+	SwapNodeWithLast(sibling);
+	//forget about parent
 	m_nodeCount--;
 
 	//refit the whole tree
@@ -282,15 +307,17 @@ int DynamicTree::AllocateNewLeaf(Rectangle* rect)
 {
 	Node node;
 	AABB aabb;
-	aabb.lowerBound = rect->pos - (rect->size / 2.f);
-	aabb.upperBound = rect->pos + (rect->size / 2.f);
+	sf::Vector2f FatAABB(FAT_FACTOR, FAT_FACTOR);
+	aabb.lowerBound = rect->pos - (rect->size / 2.f) -FatAABB;
+	aabb.upperBound = rect->pos + (rect->size / 2.f) +FatAABB;
 	node.box = aabb;
 	node.ownIndex = m_nodeCount;
 	node.isLeaf = true;
 	node.object = rect;
 
-	m_nodes[node.ownIndex] = node;
 
+	m_nodes[node.ownIndex] = node;
+	rect->nodeIndex = m_nodeCount;
 	m_nodeCount++;
 
 	return node.ownIndex;
@@ -310,6 +337,8 @@ int DynamicTree::AllocateInternalNode(Node& a, Node& b)
 	
 	//swaping internal node with leaf node
 	a.ownIndex = m_nodeCount;
+	if(a.object != nullptr)
+		a.object->nodeIndex = m_nodeCount;
 
 	if (!a.isLeaf) {
 		m_nodes[a.child1].parentIndex = a.ownIndex;
