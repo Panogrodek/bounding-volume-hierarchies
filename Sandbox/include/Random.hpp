@@ -2,7 +2,7 @@
 
 #include <random>
 
-static std::mt19937 m_randEngine;
+static std::mt19937 m_randEngine(time(0));
 
 template<typename T>
 static T Rand(T min, T max) {

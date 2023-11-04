@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/System/Vector2.hpp>
 
-constexpr float FAT_FACTOR = 2.0f;
+constexpr float FAT_FACTOR = 2.0f; //determines the fat aabbs size increase
 
 static int m_Checks = 0;
 
@@ -55,7 +55,6 @@ public:
 	void Update(int index);
 	void Render(sf::RenderWindow& window);
 
-	Rectangle* Test(sf::Vector2f mousePos, bool Remove);
 	std::vector<Rectangle*> GetCollisions(Rectangle* object);
 private:
 	Node* m_nodes;

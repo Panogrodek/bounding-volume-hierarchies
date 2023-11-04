@@ -54,11 +54,6 @@ bool CircleObject::Collide(CircleObject& other)
 		return false;
 
 	m_intersects = true;
-	//other.m_moveVec *= -1.f;
-	//m_moveVec *= -1.f;
-
-	//Move(0.025f);
-	//other.Move(0.025f);
 }
 
 bool CircleObject::Dynamic()
@@ -114,8 +109,8 @@ void CircleObjectManager::Update(float dt)
 	std::cout << "Without bvh: " << m_bodies.size() * (m_bodies.size()-1);
 	int checks = 0;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		for (auto& b1 : m_bodies) { //bvh solution
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) { //bvh solution
+		for (auto& b1 : m_bodies) { 
 			b1->Update(dt);
 			std::vector<Rectangle*> objects = m_dynamicTree.GetCollisions(b1->GetRectangle());
 
@@ -127,7 +122,7 @@ void CircleObjectManager::Update(float dt)
 			m_dynamicTree.Update(b1->GetRectangle()->nodeIndex);
 		}
 	}
-	else {
+	else { //brute force solution
 		for (auto& b1 : m_bodies) {
 			b1->Update(dt);
 			for (auto& b2 : m_bodies) {
@@ -144,6 +139,7 @@ void CircleObjectManager::Render(sf::RenderWindow& window)
 {
 	for (auto& b : m_bodies)
 		b->Render(window);
+	//uncomment this line, to see each bounding box in bvh
 	//m_dynamicTree.Render(window);
 }
 

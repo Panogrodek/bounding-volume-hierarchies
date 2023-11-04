@@ -9,7 +9,7 @@ Application::Application()
 {
 	Init();
 
-	//for simplicity, window coords are the same as rectangle coords
+	//for simplicity, window coords are the same as boundaries
 	m_window.setView(sf::View({{BOUNDS.x/2.f, BOUNDS.y/2.f}, {BOUNDS.x, -BOUNDS.y}}));
 }
 
@@ -35,25 +35,18 @@ void Application::Init()
 
 	m_clock.restart();
 	CircleObjectManager::Init();
-	//CircleObjectManager::AddCircle(10.f, { 30.f,60.f }, { -5.f,5.f });
-	//CircleObjectManager::AddCircle(10.f, { 60.f,30.f }, { 5.f,-5.f });
-	//CircleObjectManager::AddCircle(10.f, { 30.f,60.f }, { 5.f,-5.f });
-	//CircleObjectManager::AddCircle(10.f, { 20.f,60.f }, { -10.f,-5.f });
-	//CircleObjectManager::AddCircle(10.f, { 50.f,60.f }, { 15.f,-5.f });
 
+	/*
+	Here you can manage the amount of circles on the screen.Some notes for that:
+	-The map boundaries are 100 by 100, the algorithm works best when the circle radiuses are smaller than 1
+	-You can change the map boundaries in CircleObject.hpp
+	*/
 	for (int i = 0; i < 1000; i++) {
-		if(i % 2)
-			CircleObjectManager::AddCircle(Rand(2.f, 6.f), { Rand(10.f,90.f),Rand(10.f,90.f) }, { 0.f,0.f });
-		CircleObjectManager::AddCircle(Rand(2.f,6.f),{Rand(10.f,90.f),Rand(10.f,90.f) }, { Rand(-5.f,5.f),Rand(-5.f,5.f) });
+		float radius = Rand(1.0f, 2.0f);
+		sf::Vector2f startPos = { Rand(10.f,90.f),Rand(10.f,90.f) };
+		sf::Vector2f moveVec = { Rand(-0.5f,0.5f),Rand(-0.5f,0.5f) };
+		CircleObjectManager::AddCircle(radius,startPos,moveVec);
 	}
-	//m_Rects.push_back(new Rectangle({ 6.f,50.f }, { 10.f,10.f	}));
-	//m_Rects.push_back(new Rectangle({ 75.f,80.f }, { 20.f,7.5f  }));
-	//m_Rects.push_back(new Rectangle({ 25.f,30.f }, { 5.f,10.f	}));
-	//m_Rects.push_back(new Rectangle({ 80.f,20.f }, { 16.f,15.5f }));
-
-
-	//for (auto& r : m_Rects)
-	//	m_DynamicTree.Insert(r);
 }
 
 void Application::InitWindow()
@@ -66,6 +59,7 @@ void Application::InitWindow()
 
 void Application::Update()
 {
+	//clock
 	m_dt = m_clock.getElapsedTime().asSeconds();
 	m_clock.restart();
 		
@@ -73,62 +67,14 @@ void Application::Update()
 	ss << int(1.0f / m_dt);
 
 	m_window.setTitle(ss.str());
+	//
 
 	CircleObjectManager::Update(m_dt);
-
-
-	sf::Vector2i mousePos = sf::Mouse::getPosition(m_window);
-	sf::Vector2f mouseCoords = m_window.mapPixelToCoords(mousePos);
-	//std::cout << "Without BVH: " << m_Rects.size() << " ";
-
-	//bool isleftpressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
-
-	//m_HoveredObject = m_DynamicTree.Test(mouseCoords, isleftpressed);
-	//if (isleftpressed && m_HoveredObject != nullptr) {
-	//	for (int i = 0; i < m_Rects.size(); i++) {
-	//		Rectangle* rect = m_Rects[i];
-	//		if (rect != m_HoveredObject)
-	//			continue;
-
-	//		delete rect;
-	//		m_Rects.erase(m_Rects.begin() + i);
-	//		break;
-	//	}
-	//}
-
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !keyPress) {
-
-	//	keyPress = true;
-	//	int index = m_Rects.size();
-	//	if (index < m_RectsPos.size()) {
-	//		m_Rects.push_back(new Rectangle(m_RectsPos[index], m_RectsSizes[index]));
-	//	}
-	//	else {
-	//		m_Rects.push_back(new Rectangle({ Rand(0.f,100.f),Rand(0.f,100.f) }, { Rand(0.f,10.f),Rand(0.f,10.f) }));
-	//	}
-	//	m_DynamicTree.Insert(m_Rects.back());
-	//}
-	//else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-	//	keyPress = false;
-	//}
 }
 
 void Application::Render()
 {
 	m_window.clear();
-	
-	m_DynamicTree.Render(m_window);
-
-	for (auto& r : m_Rects) {
-		sf::RectangleShape shape;
-		if (r == m_HoveredObject)
-			shape.setFillColor(sf::Color::Red);
-		shape.setSize(r->size);
-		shape.setOrigin(r->size / 2.f);
-		shape.setPosition(r->pos);
-
-		m_window.draw(shape);
-	}
 
 	CircleObjectManager::Render(m_window);
 

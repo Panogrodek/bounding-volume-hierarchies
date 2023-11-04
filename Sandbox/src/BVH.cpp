@@ -167,42 +167,6 @@ void DynamicTree::Render(sf::RenderWindow& window)
 	}
 }
 
-Rectangle* DynamicTree::Test(sf::Vector2f mousePos, bool Remove)
-{
-	//m_Checks = 0;
-	//std::stack<int> stack;
-	//if(m_rootIndex != -1)
-	//	stack.push(m_rootIndex);
-
-	//while (!stack.empty()) {
-	//	int index = stack.top();
-	//	stack.pop();
-
-	//	Node node = m_nodes[index];
-
-	//	if (!node.box.contains(mousePos)) {
-	//		continue;
-	//	}
-
-	//	if (node.isLeaf) {
-	//		std::cout << "With BVH: " << m_Checks << "\n";
-	//		Rectangle* obj = node.object;
-	//		if (Remove)
-	//			RemoveLeafNode(index);
-	//		return obj;
-	//	}
-	//	else
-	//	{
-	//		if (node.child1 != -1)
-	//			stack.push(node.child1);
-	//		if (node.child2 != -1)
-	//			stack.push(node.child2);
-	//	}
-	//}
-	//std::cout << "With BVH: " << m_Checks << "\n";
-	return nullptr;
-}
-
 std::vector<Rectangle*> DynamicTree::GetCollisions(Rectangle* obj)
 {
 	std::vector<Rectangle*> output{};
@@ -409,10 +373,6 @@ bool AABB::intersects(AABB other)
 {
 	return (lowerBound.x <= other.upperBound.x && upperBound.x >= other.lowerBound.x) &&
 		(lowerBound.y <= other.upperBound.y && upperBound.y >= other.lowerBound.y);
-
-	//bool X0 = !(upperBound.x < other.lowerBound.x && lowerBound.x > other.upperBound.x);
-	//bool Y0 = !(upperBound.y < other.lowerBound.y && lowerBound.y > other.upperBound.y);
-	//return X0 && Y0;
 }
 
 float AABB::GetPerimeter()

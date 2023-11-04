@@ -1,2 +1,27 @@
-﻿  Application.cpp
-  Sandbox.vcxproj -> C:\Users\pawel\Desktop\C++\sfml program\Quatree collision\Quadtree-collision\Sandbox\bin\release\Sandbox.exe
+﻿  main.cpp
+C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\include\Random.hpp(5,38): warning C4244: "argument": konwersja z "time_t" do "unsigned int", możliwa utrata danych
+  Application.cpp
+C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\include\Random.hpp(5,38): warning C4244: "argument": konwersja z "time_t" do "unsigned int", możliwa utrata danych
+  BVH.cpp
+C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\include\Random.hpp(5,38): warning C4244: "argument": konwersja z "time_t" do "unsigned int", możliwa utrata danych
+  CircleObject.cpp
+C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\include\Random.hpp(5,38): warning C4244: "argument": konwersja z "time_t" do "unsigned int", możliwa utrata danych
+C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\src\CircleObject.cpp(75,72): warning C4244: "argument": konwersja z "T" do "uint8_t", możliwa utrata danych
+          with
+          [
+              T=float
+          ]
+C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\src\CircleObject.cpp(75,54): warning C4244: "argument": konwersja z "T" do "uint8_t", możliwa utrata danych
+          with
+          [
+              T=float
+          ]
+C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\src\CircleObject.cpp(75,36): warning C4244: "argument": konwersja z "T" do "uint8_t", możliwa utrata danych
+          with
+          [
+              T=float
+          ]
+C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\src\CircleObject.cpp(104,31): warning C4834: odrzucanie zwracanej wartości funkcji z atrybutem „nodiscard”
+  Generowanie kodu...
+C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\src\CircleObject.cpp(57): warning C4715: "CircleObject::Collide”: niewszystkie ścieżki kodu zwracają wartość
+  Sandbox.vcxproj -> C:\Users\Radek\Desktop\cpp\bounding-volume-hierarchies\Sandbox\bin\release\Sandbox.exe
