@@ -18,11 +18,14 @@ https://github.com/erincatto/box2d
 https://github.com/erincatto/box2d/blob/main/src/collision/b2_dynamic_tree.cpp
 https://github.com/erincatto/box2d/blob/main/include/box2d/b2_dynamic_tree.h
 https://box2d.org/files/ErinCatto_DynamicBVH_Full.pdf
+https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=fb1b1e9ca790c619854bdb92a6722cf21c50b572
+https://www.youtube.com/watch?v=er23-Kt-uHE&ab_channel=AlexBui
+https://github.com/zanbowie138/PhysicsSimulator/blob/master/src/physics/DynamicTree.h
 */
 
 DynamicTree::DynamicTree()
 {
-	m_nodes = new Node[1024]; //obviously this can be done better
+	m_nodes = new Node[10000]; //obviously this can be done better
 }
 
 DynamicTree::~DynamicTree()
@@ -166,38 +169,68 @@ void DynamicTree::Render(sf::RenderWindow& window)
 
 Rectangle* DynamicTree::Test(sf::Vector2f mousePos, bool Remove)
 {
-	m_Checks = 0;
+	//m_Checks = 0;
+	//std::stack<int> stack;
+	//if(m_rootIndex != -1)
+	//	stack.push(m_rootIndex);
+
+	//while (!stack.empty()) {
+	//	int index = stack.top();
+	//	stack.pop();
+
+	//	Node node = m_nodes[index];
+
+	//	if (!node.box.contains(mousePos)) {
+	//		continue;
+	//	}
+
+	//	if (node.isLeaf) {
+	//		std::cout << "With BVH: " << m_Checks << "\n";
+	//		Rectangle* obj = node.object;
+	//		if (Remove)
+	//			RemoveLeafNode(index);
+	//		return obj;
+	//	}
+	//	else
+	//	{
+	//		if (node.child1 != -1)
+	//			stack.push(node.child1);
+	//		if (node.child2 != -1)
+	//			stack.push(node.child2);
+	//	}
+	//}
+	//std::cout << "With BVH: " << m_Checks << "\n";
+	return nullptr;
+}
+
+std::vector<Rectangle*> DynamicTree::GetCollisions(Rectangle* obj)
+{
+	std::vector<Rectangle*> output{};
 	std::stack<int> stack;
-	if(m_rootIndex != -1)
-		stack.push(m_rootIndex);
+	stack.push(m_rootIndex);
+	
+	AABB aabb;
+	aabb.lowerBound = obj->pos - (obj->size / 2.f);
+	aabb.upperBound = obj->pos + (obj->size / 2.f);
 
 	while (!stack.empty()) {
 		int index = stack.top();
 		stack.pop();
 
-		Node node = m_nodes[index];
+		Node& node = m_nodes[index];
 
-		if (!node.box.contains(mousePos)) {
+		if (!node.box.intersects(aabb))
+			continue;
+		if (node.isLeaf && node.object != obj) {
+			output.push_back(node.object);
 			continue;
 		}
-
-		if (node.isLeaf) {
-			std::cout << "With BVH: " << m_Checks << "\n";
-			Rectangle* obj = node.object;
-			if (Remove)
-				RemoveLeafNode(index);
-			return obj;
-		}
-		else
-		{
-			if (node.child1 != -1)
-				stack.push(node.child1);
-			if (node.child2 != -1)
-				stack.push(node.child2);
-		}
+		if (node.child1 != -1)
+			stack.push(node.child1);
+		if (node.child2 != -1)
+			stack.push(node.child2);
 	}
-	std::cout << "With BVH: " << m_Checks << "\n";
-	return nullptr;
+	return output;
 }
 
 AABB DynamicTree::Union(AABB a, AABB b)
@@ -360,12 +393,26 @@ int DynamicTree::AllocateInternalNode(Node& a, Node& b)
 
 bool AABB::contains(sf::Vector2f point)
 {
-	m_Checks++;
 	if(point.x < lowerBound.x || point.x > upperBound.x)
 		return false;
 	if (point.y < lowerBound.y || point.y > upperBound.y)
 		return false;
 	return true;
+}
+
+bool AABB::contains(AABB other)
+{
+	return contains(other.lowerBound) && contains(other.upperBound);
+}
+
+bool AABB::intersects(AABB other)
+{
+	return (lowerBound.x <= other.upperBound.x && upperBound.x >= other.lowerBound.x) &&
+		(lowerBound.y <= other.upperBound.y && upperBound.y >= other.lowerBound.y);
+
+	//bool X0 = !(upperBound.x < other.lowerBound.x && lowerBound.x > other.upperBound.x);
+	//bool Y0 = !(upperBound.y < other.lowerBound.y && lowerBound.y > other.upperBound.y);
+	//return X0 && Y0;
 }
 
 float AABB::GetPerimeter()

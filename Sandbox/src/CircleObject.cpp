@@ -34,12 +34,15 @@ void CircleObject::Update(float dt)
 	https://gafferongames.com/post/fix_your_timestep/
 	*/
 	Move(dt);
-
-
 }
 
 void CircleObject::Render(sf::RenderWindow& window)
 {
+	if (m_intersects)
+		m_body.setFillColor(sf::Color::White);
+	else
+		m_body.setFillColor(sf::Color::Red);
+	m_intersects = false;
 	window.draw(m_body);
 }
 
@@ -50,11 +53,12 @@ bool CircleObject::Collide(CircleObject& other)
 	if (distance > m_radius + other.m_radius)
 		return false;
 
-	other.m_moveVec *= -1.f;
-	m_moveVec *= -1.f;
+	m_intersects = true;
+	//other.m_moveVec *= -1.f;
+	//m_moveVec *= -1.f;
 
-	Move(0.025f);
-	other.Move(0.025f);
+	//Move(0.025f);
+	//other.Move(0.025f);
 }
 
 bool CircleObject::Dynamic()
@@ -107,24 +111,40 @@ void CircleObjectManager::Init()
 
 void CircleObjectManager::Update(float dt)
 {
-	for (auto& b1 : m_bodies) {
-		for (auto& b2 : m_bodies) {
-			if (b1 == b2)
-				continue;
-			b1->Collide(*b2);
+	std::cout << "Without bvh: " << m_bodies.size() * (m_bodies.size()-1);
+	int checks = 0;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+		for (auto& b1 : m_bodies) { //bvh solution
+			b1->Update(dt);
+			std::vector<Rectangle*> objects = m_dynamicTree.GetCollisions(b1->GetRectangle());
+
+			for (auto& b2 : objects) {
+				checks++;
+				b1->Collide(*b2->objptr);
+			}
+
+			m_dynamicTree.Update(b1->GetRectangle()->nodeIndex);
 		}
 	}
-	for (auto& b : m_bodies) {
-		b->Update(dt);
-		m_dynamicTree.Update(b->GetRectangle()->nodeIndex);
+	else {
+		for (auto& b1 : m_bodies) {
+			b1->Update(dt);
+			for (auto& b2 : m_bodies) {
+				if (b1 == b2)
+					continue;
+				b1->Collide(*b2);
+			}
+		}
 	}
+	std::cout << " with bvh: " << checks << "\n";
 }
 
 void CircleObjectManager::Render(sf::RenderWindow& window)
 {
 	for (auto& b : m_bodies)
 		b->Render(window);
-	m_dynamicTree.Render(window);
+	//m_dynamicTree.Render(window);
 }
 
 void CircleObjectManager::Destroy()

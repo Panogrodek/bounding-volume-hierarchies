@@ -21,6 +21,7 @@ private:
 	void Move(float timestep);
 
 	float m_radius = 0.f;
+	bool m_intersects = false;
 	sf::Vector2f m_center;
 	sf::Vector2f m_moveVec;
 
